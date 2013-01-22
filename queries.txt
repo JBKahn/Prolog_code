@@ -1,0 +1,41 @@
+/** A 
+This will return wether there are any records of flights from
+toronto to madrid of any cost, airline and duration.*/
+flight(toronto,_,madrid,_,_).
+
+/** B
+A flight from A to B through C is cheap if it exists and the
+price stored in X is less than 400*/
+cheap(A,B,C):- flight(A,C,B,X,_), X<400.
+
+/** C
+Is there a flight from toronto to paris, which passes through
+a station C, exists if there is a flight from toronto to C and C
+to paris.*/
+flight(toronto,_,C,_,_),flight(C,_,paris,_,_).
+
+/** D
+A flight is preferred if it is cheap. A flight is also preferred 
+if the flight airline is aircanada*/
+preferred(A,B,C):- cheap(A,B,C), not(C = aircanada).
+preferred(_,_,C):- C = aircanada.
+
+/** E
+A flight from A to B through aircanada exists if there is one
+through united.*/
+flight(A,aircanada,B,_,_):- flight(A,united,B,_,_).
+
+% What flights have a duration greater than 3 hours?
+flight(Origin,Airline,Destination,Price,Duration), Duration>180.
+
+% What pairs of distinct cities can be connected using exactly two flights with the same airline?
+airport(City1,_,_), airport(City2,_,_),City1\=City2,not(not((flight(City1,_,Intermediate,_,_), flight(Intermediate,_,City2,_,_)))).
+
+% What city can be reached from Toronto in one flight, and with the cheapest ticket?
+airport(City,_,_),not(not((flight(toronto,_,City,CheapestPrice,_),not((flight(toronto,_,_,FlightPrice,_), FlightPrice<CheapestPrice))))).
+
+% What is the city with the most expensive airport tax?
+airport(City,_,_), not(not((airport(City,AirportTax,_),not((airport(_,SecondAirportTax,_), AirportTax<SecondAirportTax))))).
+
+% What cities cannot be reached from Valencia with just one flight?
+airport(City,_,_), not(flight(City,_,valencia,_,_)).
